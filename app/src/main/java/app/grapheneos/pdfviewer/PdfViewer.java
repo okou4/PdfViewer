@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class PdfViewer extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<CharSequence>> {
     public static final String TAG = "PdfViewer";
@@ -346,17 +347,35 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
         GestureHelper.attach(PdfViewer.this, binding.webview,
                 new GestureHelper.GestureListener() {
                     @Override
-                    public boolean onTapUp() {
+                    public boolean onTapMiddle() {
                         if (mUri != null) {
                             binding.webview.evaluateJavascript("isTextSelected()", selection -> {
                                 if (!Boolean.parseBoolean(selection)) {
-                                    if (getSupportActionBar().isShowing()) {
+                                    if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
                                         hideSystemUi();
                                     } else {
                                         showSystemUi();
                                     }
                                 }
                             });
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onTapLeft() {
+                        if(mPage > 0) {
+                            onJumpToPageInDocument(mPage - 1);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onTapRight() {
+                        if(mPage < mNumPages) {
+                            onJumpToPageInDocument(mPage + 1);
                             return true;
                         }
                         return false;
