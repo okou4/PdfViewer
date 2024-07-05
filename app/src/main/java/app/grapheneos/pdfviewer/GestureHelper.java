@@ -53,8 +53,6 @@ class GestureHelper {
                         final float tapX = motionEvent.getX();
                         final TapZones zones = createTapZones(viewWidth);
 
-                        Log.d("GestureHelper", "viewWidth: " + viewWidth + ", tapX: " + tapX + ", zones: " + zones);
-
                         if(zones.getLeft().contains(tapX, 0)) {
                             return listener.onTapLeft();
                         } else if(zones.getMiddle().contains(tapX, 0)) {
