@@ -349,13 +349,11 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
                     @Override
                     public boolean onTapMiddle() {
                         if (mUri != null) {
-                            binding.webview.evaluateJavascript("isTextSelected()", selection -> {
-                                if (!Boolean.parseBoolean(selection)) {
-                                    if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
-                                        hideSystemUi();
-                                    } else {
-                                        showSystemUi();
-                                    }
+                            executeIfTextIsNotSelected(() -> {
+                                if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
+                                    hideSystemUi();
+                                } else {
+                                    showSystemUi();
                                 }
                             });
                             return true;
@@ -365,8 +363,12 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
 
                     @Override
                     public boolean onTapLeft() {
-                        if(mPage > 0) {
-                            onJumpToPageInDocument(mPage - 1);
+                        if(mUri != null) {
+                            executeIfTextIsNotSelected(() -> {
+                                if(mPage > 0) {
+                                    onJumpToPageInDocument(mPage - 1);
+                                }
+                            });
                             return true;
                         }
                         return false;
@@ -374,8 +376,12 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
 
                     @Override
                     public boolean onTapRight() {
-                        if(mPage < mNumPages) {
-                            onJumpToPageInDocument(mPage + 1);
+                        if(mUri != null) {
+                            executeIfTextIsNotSelected(() -> {
+                                if(mPage < mNumPages) {
+                                    onJumpToPageInDocument(mPage + 1);
+                                }
+                            });
                             return true;
                         }
                         return false;
@@ -615,6 +621,14 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
             showPageNumber();
             invalidateOptionsMenu();
         }
+    }
+
+    private void executeIfTextIsNotSelected(Runnable e) {
+        binding.webview.evaluateJavascript("isTextSelected()", selection -> {
+            if (!Boolean.parseBoolean(selection)) {
+                e.run();
+            }
+        });
     }
 
     private void showSystemUi() {
