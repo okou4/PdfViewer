@@ -2,16 +2,12 @@ package app.grapheneos.pdfviewer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.RectKt;
 
 /*
     The GestureHelper present a simple gesture api for the PdfViewer
