@@ -347,7 +347,7 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
         GestureHelper.attach(PdfViewer.this, binding.webview,
                 new GestureHelper.GestureListener() {
                     @Override
-                    public boolean onTapMiddle() {
+                    public boolean onTapUpMiddle() {
                         if (mUri != null) {
                             executeIfTextIsNotSelected(() -> {
                                 if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
@@ -362,7 +362,7 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
                     }
 
                     @Override
-                    public boolean onTapLeft() {
+                    public boolean onTapUpLeft() {
                         if(mUri != null) {
                             executeIfTextIsNotSelected(() -> {
                                 if(mPage > 0) {
@@ -375,7 +375,7 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
                     }
 
                     @Override
-                    public boolean onTapRight() {
+                    public boolean onTapUpRight() {
                         if(mUri != null) {
                             executeIfTextIsNotSelected(() -> {
                                 if(mPage < mNumPages) {

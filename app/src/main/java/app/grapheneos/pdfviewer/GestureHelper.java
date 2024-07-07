@@ -9,15 +9,17 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /*
     The GestureHelper present a simple gesture api for the PdfViewer
 */
 
 class GestureHelper {
     public interface GestureListener {
-        boolean onTapLeft();
-        boolean onTapMiddle();
-        boolean onTapRight();
+        boolean onTapUpLeft();
+        boolean onTapUpMiddle();
+        boolean onTapUpRight();
         // Can be replaced with ratio when supported
         void onZoomIn(float value);
         void onZoomOut(float value);
@@ -26,21 +28,28 @@ class GestureHelper {
 
     @SuppressLint("ClickableViewAccessibility")
     static void attach(Context context, View gestureView, GestureListener listener) {
+        AtomicReference<TapZones> tapZones = new AtomicReference<>(new TapZones(0));
+
+        gestureView.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> {
+            // When attach is called by the PdfViewer activity the gestureView (webView) is empty
+            // and with the width of 0, it will only get its true width once the pdf has been
+            // loaded. This callback will create the TapZones once the pdf has been loaded.
+            tapZones.set(new TapZones(view.getWidth()));
+        });
 
         final GestureDetector detector = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
-                        final int viewWidth = gestureView.getWidth();
                         final float tapX = motionEvent.getX();
-                        final TapZones zones = new TapZones(viewWidth);
+                        final TapZones zones = tapZones.get();
 
                         if(zones.getLeft().contains(tapX, 0)) {
-                            return listener.onTapLeft();
+                            return listener.onTapUpLeft();
                         } else if(zones.getMiddle().contains(tapX, 0)) {
-                            return listener.onTapMiddle();
+                            return listener.onTapUpMiddle();
                         } else if(zones.getRight().contains(tapX, 0)) {
-                            return listener.onTapRight();
+                            return listener.onTapUpRight();
                         }
 
                         return super.onSingleTapUp(motionEvent);
