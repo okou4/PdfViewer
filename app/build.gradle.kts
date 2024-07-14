@@ -1,6 +1,6 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
+import org.apache.tools.ant.taskdefs.condition.Os
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val useKeystoreProperties = keystorePropertiesFile.canRead()
@@ -40,7 +40,7 @@ android {
     }
 
     compileSdk = 34
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = "35.0.0"
 
     namespace = "app.grapheneos.pdfviewer"
 
