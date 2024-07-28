@@ -126,6 +126,7 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
     private String mEncryptedDocumentPassword;
     private List<CharSequence> mDocumentProperties;
     private InputStream mInputStream;
+    private boolean isTextSelected = false;
 
     private PdfviewerBinding binding;
     private TextView mTextView;
@@ -234,6 +235,11 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
         @JavascriptInterface
         public String getPassword() {
             return mEncryptedDocumentPassword != null ? mEncryptedDocumentPassword : "";
+        }
+
+        @JavascriptInterface
+        public void setIsTextSelected(boolean newIsTextSelected) {
+            isTextSelected = newIsTextSelected;
         }
     }
 
@@ -346,45 +352,39 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
 
         GestureHelper.attach(PdfViewer.this, binding.webview,
                 new GestureHelper.GestureListener() {
+
                     @Override
                     public boolean onTapUpMiddle() {
-                        if (mUri != null) {
-                            executeIfTextIsNotSelected(() -> {
-                                if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
-                                    hideSystemUi();
-                                } else {
-                                    showSystemUi();
-                                }
-                            });
-                            return true;
+                        if (mUri == null || isTextSelected) {
+                            return false;
                         }
-                        return false;
+
+                        if (Objects.requireNonNull(getSupportActionBar()).isShowing()) {
+                            hideSystemUi();
+                        } else {
+                            showSystemUi();
+                        }
+                        return true;
                     }
 
                     @Override
                     public boolean onTapUpLeft() {
-                        if(mUri != null) {
-                            executeIfTextIsNotSelected(() -> {
-                                if(mPage > 0) {
-                                    onJumpToPageInDocument(mPage - 1);
-                                }
-                            });
-                            return true;
+                        if (mUri == null || isTextSelected) {
+                            return false;
                         }
-                        return false;
+
+                        onJumpToPageInDocument(mPage - 1);
+                        return true;
                     }
 
                     @Override
                     public boolean onTapUpRight() {
-                        if(mUri != null) {
-                            executeIfTextIsNotSelected(() -> {
-                                if(mPage < mNumPages) {
-                                    onJumpToPageInDocument(mPage + 1);
-                                }
-                            });
-                            return true;
+                        if (mUri == null || isTextSelected) {
+                            return false;
                         }
-                        return false;
+
+                        onJumpToPageInDocument(mPage + 1);
+                        return true;
                     }
 
                     @Override
@@ -621,14 +621,6 @@ public class PdfViewer extends AppCompatActivity implements LoaderManager.Loader
             showPageNumber();
             invalidateOptionsMenu();
         }
-    }
-
-    private void executeIfTextIsNotSelected(Runnable e) {
-        binding.webview.evaluateJavascript("isTextSelected()", selection -> {
-            if (!Boolean.parseBoolean(selection)) {
-                e.run();
-            }
-        });
     }
 
     private void showSystemUi() {

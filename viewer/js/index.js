@@ -243,9 +243,14 @@ globalThis.onRenderPage = function (zoom) {
     }
 };
 
-globalThis.isTextSelected = function () {
-    return globalThis.getSelection().toString() !== "";
-};
+document.addEventListener("selectionchange", () => {
+    let isTextSelected = document.getSelection().toString() !== "";
+    if (isTextSelected) {
+        channel.setIsTextSelected(true);
+    } else {
+        channel.setIsTextSelected(false);
+    }
+});
 
 globalThis.toggleTextLayerVisibility = function () {
     let textLayerForeground = "red";
